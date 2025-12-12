@@ -11,28 +11,40 @@ if (!defined('ABSPATH'))
 
 // Admin Menu
 function auto_post_demo_page()
-{ ?>
-    <div class="wrap">
-        <h1>Auto Blog Demo</h1>
-        <form method="post">
+{
+    ob_start(); // prevents empty rectangle flash
+    ?>
+    <div class="wrap" style="max-width:650px;">
+        <h1 style="margin-bottom:20px;">Auto Blog Demo</h1>
+
+        <form method="post" style="background:#fff;padding:20px;border-radius:8px;border:1px solid #ddd;">
             <?php wp_nonce_field('auto_post_demo_action', 'auto_post_demo_nonce'); ?>
 
-            <label for="post_topic"><strong>Select Topic:</strong></label>
-            <select name="post_topic" id="post_topic">
-                <option value="coloring">Coloring</option>
-                <option value="DIY">DIY</option>
-                <option value="art">Art & Craft</option>
-                <option value="recipes">Recipes</option>
-                <option value="fitness">Fitness</option>
-                <option value="travel">Travel</option>
-                <option value="tech">Tech Tips</option>
-            </select>
-            <br><br>
+            <div style="margin-bottom:20px;">
+                <label for="post_topic" style="font-weight:600;font-size:15px;margin-bottom:6px;display:block;">Select
+                    Topic</label><br>
+                <select name="post_topic" id="post_topic"
+                    style="width:100%;padding:8px 10px;font-size:14px;border:1px solid #ccc;border-radius:6px;">
+                    <option value="coloring">Coloring</option>
+                    <option value="DIY">DIY</option>
+                    <option value="art">Art & Craft</option>
+                    <option value="recipes">Recipes</option>
+                    <option value="fitness">Fitness</option>
+                    <option value="travel">Travel</option>
+                    <option value="tech">Tech Tips</option>
+                </select>
+            </div>
 
-            <input type="submit" name="generate_post" class="button button-primary" value="Generate Blog Post">
-            <input type="submit" name="generate_bulk" class="button" value="Generate 3 Posts">
+            <div style="display:flex;gap:10px;">
+                <input type="submit" name="generate_post" class="button button-primary"
+                    style="padding:8px 16px;font-size:14px;border-radius:6px;" value="Generate 1 Post">
+
+                <input type="submit" name="generate_bulk" class="button"
+                    style="padding:8px 16px;font-size:14px;border-radius:6px;" value="Generate 3 Posts">
+            </div>
         </form>
     </div>
+
     <?php
     if (isset($_POST['generate_post'])) {
         auto_post_demo_handle_generation(1);
@@ -40,7 +52,10 @@ function auto_post_demo_page()
     if (isset($_POST['generate_bulk'])) {
         auto_post_demo_handle_generation(3);
     }
+
+    ob_end_flush(); // fixes empty rectangle output
 }
+
 
 add_action('admin_menu', function () {
     add_menu_page(
@@ -67,41 +82,126 @@ function auto_post_demo_handle_generation($count = 1)
 
     $topics_data = [
         'coloring' => [
-            'titles' => ["Top 10 Coloring Tips for Kids", "Creative Coloring Ideas for All Ages", "How to Make Your Own Coloring Pages", "Fun and Relaxing Coloring Techniques", "Coloring Activities to Boost Creativity"],
-            'paragraphs' => ["Coloring helps develop fine motor skills and encourages creativity.", "Try mixing colors to make your pages look more vibrant.", "Use different textures of paper for a unique coloring experience.", "Create themed coloring challenges for kids to enjoy.", "Experiment with shading and blending to add depth to your drawings.", "Share your colored pages online and get inspiration from others."],
+            'titles' => [
+                "Coloring Tips for Kids",
+                "Creative Coloring Ideas for All Ages",
+                "How to Make Your Own Coloring Pages",
+                "Fun and Relaxing Coloring Techniques",
+                "Coloring Activities to Boost Creativity"
+            ],
+            'paragraphs' => [
+                "Coloring is not just a fun activity—it’s a way to help children develop fine motor skills and express creativity. From choosing the right coloring tools to experimenting with textures, each step teaches them to observe and plan carefully.",
+                "Starting with basic shapes and simple patterns allows kids to build confidence, while gradually introducing more complex designs challenges them to think critically. Parents can join in to make it a collaborative and bonding experience.",
+                "Mixing colors and experimenting with shading techniques adds depth and realism to their artwork. Encouraging children to try blending different shades fosters an understanding of color theory and visual aesthetics.",
+                "Creating themed challenges, like seasonal or story-based coloring pages, keeps the activity engaging and promotes storytelling skills. Children learn to narrate stories through their art, connecting imagination with expression.",
+                "Sharing colored pages with family or online communities motivates kids to continue practicing, and it exposes them to new ideas and techniques. Over time, these simple coloring activities become a gateway to broader artistic skills."
+            ],
             'tags' => ['coloring', 'kids', 'creative', 'fun', 'art']
         ],
         'DIY' => [
-            'titles' => ["Easy DIY Projects for Beginners", "Creative DIY Crafts for Home", "DIY Organization Ideas", "Step-by-Step DIY Tutorials", "Fun DIY Activities for Kids"],
-            'paragraphs' => ["DIY projects can save money while adding personality to your home.", "Use everyday items to create something unique and useful.", "Teach kids DIY projects to develop problem-solving skills.", "Personalize your crafts with colors, textures, and patterns.", "Combine multiple materials to create exciting new designs.", "Always follow safety tips when working with tools and materials."],
+            'titles' => [
+                "Easy DIY Projects for Beginners",
+                "Creative DIY Crafts for Home",
+                "DIY Organization Ideas",
+                "Step-by-Step DIY Tutorials",
+                "Fun DIY Activities for Kids"
+            ],
+            'paragraphs' => [
+                "DIY projects are a perfect way to combine creativity and practicality. Simple materials around the home can be transformed into useful and decorative items, giving a sense of accomplishment.",
+                "Starting with beginner-friendly projects helps build confidence, and as skills improve, more intricate crafts can be attempted. Following clear step-by-step instructions ensures success and reduces frustration.",
+                "Involving children in DIY projects encourages problem-solving and teamwork. It’s a great opportunity for parents to teach patience and careful planning while letting kids explore their imagination.",
+                "Customizing projects with colors, patterns, and textures allows every creation to feel personal and unique. From home decor to handmade gifts, the possibilities are endless and provide a great outlet for self-expression.",
+                "Sharing completed projects online or within communities creates a sense of pride and inspires others. DIY activities not only improve creative skills but also encourage sustainable practices by reusing and repurposing materials."
+            ],
             'tags' => ['DIY', 'craft', 'creative', 'home', 'kids']
         ],
         'art' => [
-            'titles' => ["Beginner-Friendly Art Projects", "Creative Art Ideas for Home", "Fun Drawing and Painting Activities", "Exploring Modern Art Techniques", "How to Start Your Art Journey"],
-            'paragraphs' => ["Art is a way to express feelings and ideas creatively.", "Experiment with colors and shapes to discover your style.", "Try different mediums like watercolor, acrylic, or pencils.", "Set aside a dedicated space to make your art projects enjoyable.", "Combine traditional and digital techniques to expand your skills.", "Share your artwork with friends or online communities for feedback."],
+            'titles' => [
+                "Beginner-Friendly Art Projects",
+                "Creative Art Ideas for Home",
+                "Fun Drawing and Painting Activities",
+                "Exploring Modern Art Techniques",
+                "How to Start Your Art Journey"
+            ],
+            'paragraphs' => [
+                "Art is an exploration of imagination, and it offers a powerful way to express feelings and ideas. Starting with simple drawing exercises helps beginners gain confidence and discover their unique style.",
+                "Experimenting with different mediums, such as pencils, watercolors, and acrylics, allows artists to understand how materials interact and how to create distinct effects.",
+                "Setting up a dedicated space for art projects makes the process enjoyable and minimizes distractions. A consistent environment encourages focus and enhances creativity.",
+                "Studying both traditional and modern techniques expands artistic possibilities. Observing other artists’ work, experimenting with styles, and blending approaches leads to richer, more nuanced creations.",
+                "Sharing artwork with friends, family, or online communities invites feedback and inspiration. Over time, consistent practice and exploration cultivate a deeper appreciation for art and personal growth as an artist."
+            ],
             'tags' => ['art', 'creative', 'painting', 'drawing', 'inspiration']
         ],
         'recipes' => [
-            'titles' => ["5 Easy Dinner Recipes", "Healthy Breakfast Ideas", "Quick Snacks for Busy Days", "Delicious Desserts You Can Make at Home", "Top 10 Comfort Food Recipes"],
-            'paragraphs' => ["Cooking at home can save money and improve your health.", "Try using fresh ingredients to enhance flavor and nutrition.", "Experiment with spices to create unique taste profiles.", "Prepare meals in advance to save time during busy weekdays.", "Share your favorite recipes with friends and family.", "Simple recipes can be both delicious and fun to make."],
+            'titles' => [
+                "Dinner Recipes",
+                "Healthy Breakfast Ideas",
+                "Quick Snacks for Busy Days",
+                "Delicious Desserts You Can Make at Home",
+                "Comfort Food Recipes"
+            ],
+            'paragraphs' => [
+                "Cooking at home is a delightful way to experiment with flavors and improve nutrition. Using fresh, seasonal ingredients ensures every meal is both tasty and healthy.",
+                "Starting with simple recipes builds confidence, and gradually exploring more complex techniques expands culinary skills. Understanding basic cooking methods is essential for creating flavorful dishes.",
+                "Planning meals ahead saves time and reduces stress during busy weekdays. Batch cooking or preparing ingredients in advance helps maintain a consistent and balanced diet.",
+                "Exploring international cuisines adds variety and excitement to your meals. Trying new spices, herbs, and flavor combinations keeps the cooking process fun and educational.",
+                "Sharing your culinary creations with friends or family strengthens connections and brings joy. Documenting recipes, experimenting with presentation, and learning from feedback transforms cooking into a creative and rewarding experience."
+            ],
             'tags' => ['recipes', 'cooking', 'food', 'easy', 'healthy']
         ],
         'fitness' => [
-            'titles' => ["Beginner Workout Routines", "Quick 20-Minute Home Workouts", "Strength Training Tips for Beginners", "Cardio Exercises for Fat Loss", "Staying Motivated in Your Fitness Journey"],
-            'paragraphs' => ["Consistency is key to achieving your fitness goals.", "Warm-up before exercises to prevent injuries.", "Mix cardio and strength training for overall health.", "Track your progress to stay motivated.", "Stay hydrated and maintain a balanced diet.", "Rest days are essential for muscle recovery."],
+            'titles' => [
+                "Beginner Workout Routines",
+                "Effective Home Workouts",
+                "Strength Training Tips for Beginners",
+                "Cardio Exercises for Fat Loss",
+                "Staying Motivated in Your Fitness Journey"
+            ],
+            'paragraphs' => [
+                "Fitness is a journey that improves both physical and mental well-being. Establishing a consistent routine helps build discipline and track progress over time.",
+                "Starting with warm-ups prevents injuries and prepares the body for more intense exercises. Incorporating a mix of strength and cardio training ensures overall fitness.",
+                "Setting realistic goals and monitoring progress motivates continued effort. Whether tracking weights lifted, distance run, or endurance, seeing improvement fuels commitment.",
+                "Rest and recovery are as important as workouts. Giving muscles time to repair prevents fatigue and reduces the risk of overtraining, while nutrition supports energy and growth.",
+                "Maintaining a positive mindset enhances performance. Celebrating small victories, staying hydrated, and mixing exercises keeps the routine enjoyable and sustainable."
+            ],
             'tags' => ['fitness', 'workout', 'health', 'exercise', 'motivation']
         ],
         'travel' => [
-            'titles' => ["Top 5 Weekend Getaways", "Travel Tips for First-Time Travelers", "Budget-Friendly Travel Ideas", "Must-See Destinations This Year", "Packing Hacks for Stress-Free Travel"],
-            'paragraphs' => ["Plan ahead to make the most of your trips.", "Research local culture and customs before traveling.", "Use travel apps to simplify your itinerary.", "Capture memories through photos and journaling.", "Traveling helps broaden your perspective and creativity.", "Try local food and activities to enrich your experience."],
+            'titles' => [
+                "Weekend Getaways",
+                "Travel Tips for First-Time Travelers",
+                "Budget-Friendly Travel Ideas",
+                "Must-See Destinations This Year",
+                "Packing Hacks for Stress-Free Travel"
+            ],
+            'paragraphs' => [
+                "Travel opens the mind to new experiences and broadens perspectives. Planning ahead ensures you maximize your time and discover hidden gems at each destination.",
+                "Researching local culture, customs, and cuisine enhances the travel experience. Engaging with locals and trying new activities creates memorable stories.",
+                "Budgeting and organizing travel plans makes trips less stressful. Prioritizing destinations and creating flexible itineraries balances exploration with relaxation.",
+                "Capturing moments through photography or journaling helps preserve memories. Sharing stories with friends and family allows experiences to inspire others.",
+                "Traveling encourages personal growth and adaptability. Each trip teaches problem-solving, communication, and planning skills, making every journey both fun and educational."
+            ],
             'tags' => ['travel', 'tips', 'adventure', 'vacation', 'explore']
         ],
         'tech' => [
-            'titles' => ["Top 5 Productivity Apps", "Essential Tools for Remote Work", "How to Stay Safe Online", "Tech Hacks to Simplify Your Day", "Beginner’s Guide to Coding"],
-            'paragraphs' => ["Explore new apps to improve productivity and organization.", "Keep software updated to ensure security and performance.", "Learn basic coding to enhance your technical skills.", "Use shortcuts and automation to save time on tasks.", "Regularly back up your files to avoid data loss.", "Stay curious and keep experimenting with new tools."],
+            'titles' => [
+                "Productivity Strategies",
+                "Essential Tools for Remote Work",
+                "How to Stay Safe Online",
+                "Tech Hacks to Simplify Your Day",
+                "Beginner’s Guide to Coding"
+            ],
+            'paragraphs' => [
+                "Technology can simplify life and enhance productivity. Exploring apps and tools helps optimize workflows and save time on repetitive tasks.",
+                "Understanding basic cybersecurity practices keeps your devices and data safe. Using strong passwords, updates, and backups ensures protection against threats.",
+                "Learning basic coding improves problem-solving skills and opens opportunities to automate tasks. Small projects allow hands-on practice and gradual skill development.",
+                "Adopting effective productivity strategies, like time blocking or automation, maximizes efficiency. Organizing tasks and minimizing distractions creates a focused environment.",
+                "Sharing knowledge and collaborating online enhances learning and innovation. Experimenting with new tools and techniques encourages continuous improvement and creativity."
+            ],
             'tags' => ['tech', 'gadgets', 'productivity', 'coding', 'tips']
         ]
     ];
+
 
     $topic_images = [
         'coloring' => ["https://images.pexels.com/photos/8014299/pexels-photo-8014299.jpeg", "https://images.pexels.com/photos/8036831/pexels-photo-8036831.jpeg", "https://images.pexels.com/photos/5274622/pexels-photo-5274622.jpeg", "https://images.pexels.com/photos/159570/crayons-coloring-book-coloring-book-159570.jpeg"],
