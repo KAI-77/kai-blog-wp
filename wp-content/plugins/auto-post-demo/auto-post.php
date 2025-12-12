@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Auto Blog Demo
-Description: Generates realistic-looking draft blog posts with topic-based content and multiple images.
+Description: Generates draft blog posts with AI-generated paragraphs and topic-based images.
 Version: 1.5
 Author: Shan
 */
@@ -57,7 +57,6 @@ add_action('admin_menu', function () {
 // Handle post generation
 function auto_post_demo_handle_generation($count = 1)
 {
-
     if (!isset($_POST['auto_post_demo_nonce']) || !wp_verify_nonce($_POST['auto_post_demo_nonce'], 'auto_post_demo_action')) {
         echo '<div class="notice notice-error"><p>Invalid request.</p></div>';
         return;
@@ -68,46 +67,39 @@ function auto_post_demo_handle_generation($count = 1)
     $topics_data = [
         'coloring' => [
             'titles' => ["Top 10 Coloring Tips for Kids", "Creative Coloring Ideas for All Ages", "How to Make Your Own Coloring Pages", "Fun and Relaxing Coloring Techniques", "Coloring Activities to Boost Creativity"],
-            'paragraphs' => ["Coloring helps develop fine motor skills and encourages creativity.", "Try mixing colors to make your pages look more vibrant.", "Use different textures of paper for a unique coloring experience.", "Create themed coloring challenges for kids to enjoy.", "Experiment with shading and blending to add depth to your drawings.", "Share your colored pages online and get inspiration from others."],
             'tags' => ['coloring', 'kids', 'creative', 'fun', 'art']
         ],
         'DIY' => [
             'titles' => ["Easy DIY Projects for Beginners", "Creative DIY Crafts for Home", "DIY Organization Ideas", "Step-by-Step DIY Tutorials", "Fun DIY Activities for Kids"],
-            'paragraphs' => ["DIY projects can save money while adding personality to your home.", "Use everyday items to create something unique and useful.", "Teach kids DIY projects to develop problem-solving skills.", "Personalize your crafts with colors, textures, and patterns.", "Combine multiple materials to create exciting new designs.", "Always follow safety tips when working with tools and materials."],
             'tags' => ['DIY', 'craft', 'creative', 'home', 'kids']
         ],
         'art' => [
             'titles' => ["Beginner-Friendly Art Projects", "Creative Art Ideas for Home", "Fun Drawing and Painting Activities", "Exploring Modern Art Techniques", "How to Start Your Art Journey"],
-            'paragraphs' => ["Art is a way to express feelings and ideas creatively.", "Experiment with colors and shapes to discover your style.", "Try different mediums like watercolor, acrylic, or pencils.", "Set aside a dedicated space to make your art projects enjoyable.", "Combine traditional and digital techniques to expand your skills.", "Share your artwork with friends or online communities for feedback."],
             'tags' => ['art', 'creative', 'painting', 'drawing', 'inspiration']
         ],
         'recipes' => [
             'titles' => ["5 Easy Dinner Recipes", "Healthy Breakfast Ideas", "Quick Snacks for Busy Days", "Delicious Desserts You Can Make at Home", "Top 10 Comfort Food Recipes"],
-            'paragraphs' => ["Cooking at home can save money and improve your health.", "Try using fresh ingredients to enhance flavor and nutrition.", "Experiment with spices to create unique taste profiles.", "Prepare meals in advance to save time during busy weekdays.", "Share your favorite recipes with friends and family.", "Simple recipes can be both delicious and fun to make."],
             'tags' => ['recipes', 'cooking', 'food', 'easy', 'healthy']
         ],
         'fitness' => [
             'titles' => ["Beginner Workout Routines", "Quick 20-Minute Home Workouts", "Strength Training Tips for Beginners", "Cardio Exercises for Fat Loss", "Staying Motivated in Your Fitness Journey"],
-            'paragraphs' => ["Consistency is key to achieving your fitness goals.", "Warm-up before exercises to prevent injuries.", "Mix cardio and strength training for overall health.", "Track your progress to stay motivated.", "Stay hydrated and maintain a balanced diet.", "Rest days are essential for muscle recovery."],
             'tags' => ['fitness', 'workout', 'health', 'exercise', 'motivation']
         ],
         'travel' => [
             'titles' => ["Top 5 Weekend Getaways", "Travel Tips for First-Time Travelers", "Budget-Friendly Travel Ideas", "Must-See Destinations This Year", "Packing Hacks for Stress-Free Travel"],
-            'paragraphs' => ["Plan ahead to make the most of your trips.", "Research local culture and customs before traveling.", "Use travel apps to simplify your itinerary.", "Capture memories through photos and journaling.", "Traveling helps broaden your perspective and creativity.", "Try local food and activities to enrich your experience."],
             'tags' => ['travel', 'tips', 'adventure', 'vacation', 'explore']
         ],
         'tech' => [
             'titles' => ["Top 5 Productivity Apps", "Essential Tools for Remote Work", "How to Stay Safe Online", "Tech Hacks to Simplify Your Day", "Beginner’s Guide to Coding"],
-            'paragraphs' => ["Explore new apps to improve productivity and organization.", "Keep software updated to ensure security and performance.", "Learn basic coding to enhance your technical skills.", "Use shortcuts and automation to save time on tasks.", "Regularly back up your files to avoid data loss.", "Stay curious and keep experimenting with new tools."],
             'tags' => ['tech', 'gadgets', 'productivity', 'coding', 'tips']
         ]
     ];
 
     $topic_images = [
         'coloring' => ["https://images.pexels.com/photos/8014299/pexels-photo-8014299.jpeg", "https://images.pexels.com/photos/8036831/pexels-photo-8036831.jpeg", "https://images.pexels.com/photos/5274622/pexels-photo-5274622.jpeg", "https://images.pexels.com/photos/159570/crayons-coloring-book-coloring-book-159570.jpeg"],
-        'DIY' => ["https://images.pexels.com/photos/35150382/pexels-photo-35150382.jpeg", "https://images.pexels.com/photos/35140769/pexels-photo-35140769.jpeg", "https://images.pexels.com/photos/982660/pexels-photo-982660.jpeg", "https://images.pexels.com/photos/1109354/pexels-photo-1109354.jpeg", "https://images.pexels.com/photos/164455/pexels-photo-164455.jpeg"],
+        'DIY' => ["https://images.pexels.com/photos/35150382/pexels-photo-35150382.jpeg", "https://images.pexels.com/photos/35140769/pexels-photo-35140769.jpeg", "https://images.pexels.com/photos/982660/pexels-photo-982660.jpeg", "https://images.pexels.com/photos/1109354/pexels-photo-1109354.jpeg"],
         'art' => ["https://images.pexels.com/photos/161154/stained-glass-spiral-circle-pattern-161154.jpeg", "https://images.pexels.com/photos/20967/pexels-photo.jpg", "https://picsum.photos/seed/art3/1200/800"],
-        'recipes' => ["https://images.pexels.com/photos/5737464/pexels-photo-5737464.jpeg", "hhttps://images.pexels.com/photos/31261499/pexels-photo-31261499.jpeg", "https://images.pexels.com/photos/65170/pexels-photo-65170.jpeg", "https://images.pexels.com/photos/14935376/pexels-photo-14935376.jpeg"],
+        'recipes' => ["https://images.pexels.com/photos/5737464/pexels-photo-5737464.jpeg", "https://images.pexels.com/photos/31261499/pexels-photo-31261499.jpeg", "https://images.pexels.com/photos/65170/pexels-photo-65170.jpeg", "https://images.pexels.com/photos/14935376/pexels-photo-14935376.jpeg"],
         'fitness' => ["https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg", "https://images.pexels.com/photos/221247/pexels-photo-221247.jpeg", "https://images.pexels.com/photos/669584/pexels-photo-669584.jpeg", "https://images.pexels.com/photos/897064/pexels-photo-897064.jpeg"],
         'travel' => ["https://images.pexels.com/photos/346885/pexels-photo-346885.jpeg", "https://images.pexels.com/photos/1058959/pexels-photo-1058959.jpeg", "https://images.pexels.com/photos/2104152/pexels-photo-2104152.jpeg", "https://images.pexels.com/photos/21014/pexels-photo.jpg"],
         'tech' => ["https://images.pexels.com/photos/39284/macbook-apple-imac-computer-39284.jpeg", "https://images.pexels.com/photos/7974/pexels-photo.jpg", "https://images.pexels.com/photos/943096/pexels-photo-943096.jpeg", "https://images.pexels.com/photos/32698507/pexels-photo-32698507.jpeg"]
@@ -115,16 +107,17 @@ function auto_post_demo_handle_generation($count = 1)
 
     $selected_data = $topics_data[$topic];
     $titles = $selected_data['titles'];
-    $paragraphs = $selected_data['paragraphs'];
     $tags_pool = $selected_data['tags'];
 
     for ($n = 0; $n < $count; $n++) {
 
         $title = $titles[array_rand($titles)];
-        shuffle($paragraphs);
+
+        // Generate AI paragraphs
+        $ai_paragraphs = generate_ai_paragraphs($topic);
         $content = "<h2>$title</h2>";
-        for ($i = 0; $i < 3; $i++) {
-            $content .= "<p>{$paragraphs[$i]}</p>";
+        foreach ($ai_paragraphs as $p) {
+            $content .= "<p>$p</p>";
         }
 
         $post_id = wp_insert_post([
@@ -172,6 +165,7 @@ function auto_post_demo_handle_generation($count = 1)
     }
 }
 
+
 // Image generation
 function auto_post_demo_generate_image_and_attach($post_id, $image_url)
 {
@@ -199,3 +193,47 @@ function auto_post_demo_generate_image_and_attach($post_id, $image_url)
     }
     return $image_id;
 }
+
+// AI paragraph generation using Gemini (Google Generative AI)
+function generate_ai_paragraphs($topic)
+{
+    $api_key = GEMINI_KEY;
+    $model = 'text-bison-001';
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/$model:generateText";
+
+    $prompt = "Write 3 short blog paragraphs (3-5 sentences each) about '$topic' in a friendly blog style.";
+
+    $body = json_encode([
+        "prompt" => ["text" => $prompt],
+        "temperature" => 0.7,
+        "candidate_count" => 1
+    ]);
+
+    $response = wp_remote_post($url, [
+        'headers' => [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $api_key
+        ],
+        'body' => $body,
+        'timeout' => 20
+    ]);
+
+    if (is_wp_error($response)) {
+        return ["Failed to get AI response."];
+    }
+
+    $data = json_decode(wp_remote_retrieve_body($response), true);
+
+    // Extract AI-generated text
+    if (isset($data['candidates'][0]['output'])) {
+        $text = $data['candidates'][0]['output'];
+        // Split into paragraphs (assuming line breaks)
+        $paragraphs = array_filter(array_map('trim', explode("\n", $text)));
+        if (count($paragraphs) > 0) {
+            return $paragraphs;
+        }
+    }
+
+    return ["No AI content generated."];
+}
+
