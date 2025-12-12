@@ -1,0 +1,38 @@
+# WordPress Core
+/wp-admin/
+/wp-includes/
+/wp-login.php
+/wp-*.php
+/license.txt
+/readme.html
+/xmlrpc.php
+
+# Default themes & plugins
+/wp-content/themes/twentytwenty*/  
+/wp-content/plugins/akismet/
+/wp-content/plugins/hello.php
+
+# Ignore uploads and cache
+/wp-content/uploads/
+/wp-content/cache/
+/wp-content/backups/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Composer / Node modules
+/vendor/
+/node_modules/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+
+# OS-specific files
+ehthumbs.db
+Icon?
