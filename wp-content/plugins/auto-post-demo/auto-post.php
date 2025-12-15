@@ -69,6 +69,88 @@ add_action('admin_menu', function () {
     );
 });
 
+add_action('admin_menu', function () {
+    add_submenu_page(
+        'auto-post-demo',
+        'Auto Blog Settings',
+        'Settings',
+        'manage_options',
+        'auto-blog-settings',
+        'auto_blog_settings_page'
+    );
+});
+
+add_action('admin_init', function () {
+
+    if (
+        isset($_POST['auto_blog_settings_nonce']) &&
+        wp_verify_nonce($_POST['auto_blog_settings_nonce'], 'auto_blog_settings_save') &&
+        current_user_can('manage_options')
+    ) {
+
+        $paragraphs = intval($_POST['auto_blog_paragraphs'] ?? 3);
+        $images = isset($_POST['auto_blog_images']) ? 1 : 0;
+
+        update_option('auto_blog_paragraphs', $paragraphs);
+        update_option('auto_blog_images', $images);
+
+        // Redirect to prevent resubmission and show notice
+        wp_redirect(add_query_arg('settings-updated', 'true', menu_page_url('auto-blog-settings', false)));
+        exit;
+    }
+
+});
+
+
+function auto_blog_settings_page(){
+
+    if (isset($_GET['settings-updated']) && $_GET['settings-updated'] === 'true') {
+        echo '<div class="notice notice-success"><p>Settings saved.</p></div>';
+    }
+
+
+    ?>
+    
+
+    <div class="wrap" style="max-width:650px;">
+        <h1>Auto Blog Settings</h1>
+
+        <form method="post">
+            <?php
+            wp_nonce_field('auto_blog_settings_save', 'auto_blog_settings_nonce');
+            ?>
+
+             <table class="form-table">
+                <tr>
+                    <th scope="row">Paragraphs per post</th>
+                    <td>
+                        <input type="number"
+                               name="auto_blog_paragraphs"
+                               value="<?php echo esc_attr(get_option('auto_blog_paragraphs', 3)); ?>"
+                               min="1"
+                               max="10">
+                    </td>
+                </tr>
+
+                <tr>
+                    <th scope="row">Attach images</th>
+                    <td>
+                        <label>
+                            <input type="checkbox"
+                                   name="auto_blog_images"
+                                   value="1"
+                                   <?php checked(get_option('auto_blog_images', 1), 1); ?>>
+                            Enable image attachments
+                        </label>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button('Save Settings'); ?>
+        </form>
+    </div>
+    <?php
+}
+
 // Handle post generation
 function auto_post_demo_handle_generation($count = 1)
 {
@@ -207,7 +289,7 @@ function auto_post_demo_handle_generation($count = 1)
         'coloring' => ["https://images.pexels.com/photos/8014299/pexels-photo-8014299.jpeg", "https://images.pexels.com/photos/8036831/pexels-photo-8036831.jpeg", "https://images.pexels.com/photos/5274622/pexels-photo-5274622.jpeg", "https://images.pexels.com/photos/159570/crayons-coloring-book-coloring-book-159570.jpeg"],
         'DIY' => ["https://images.pexels.com/photos/35150382/pexels-photo-35150382.jpeg", "https://images.pexels.com/photos/35140769/pexels-photo-35140769.jpeg", "https://images.pexels.com/photos/982660/pexels-photo-982660.jpeg", "https://images.pexels.com/photos/1109354/pexels-photo-1109354.jpeg", "https://images.pexels.com/photos/164455/pexels-photo-164455.jpeg"],
         'art' => ["https://images.pexels.com/photos/161154/stained-glass-spiral-circle-pattern-161154.jpeg", "https://images.pexels.com/photos/20967/pexels-photo.jpg", "https://picsum.photos/seed/art3/1200/800"],
-        'recipes' => ["https://images.pexels.com/photos/5737464/pexels-photo-5737464.jpeg", "hhttps://images.pexels.com/photos/31261499/pexels-photo-31261499.jpeg", "https://images.pexels.com/photos/65170/pexels-photo-65170.jpeg", "https://images.pexels.com/photos/14935376/pexels-photo-14935376.jpeg"],
+        'recipes' => ["https://images.pexels.com/photos/5737464/pexels-photo-5737464.jpeg", "https://images.pexels.com/photos/31261499/pexels-photo-31261499.jpeg", "https://images.pexels.com/photos/65170/pexels-photo-65170.jpeg", "https://images.pexels.com/photos/14935376/pexels-photo-14935376.jpeg"],
         'fitness' => ["https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg", "https://images.pexels.com/photos/221247/pexels-photo-221247.jpeg", "https://images.pexels.com/photos/669584/pexels-photo-669584.jpeg", "https://images.pexels.com/photos/897064/pexels-photo-897064.jpeg"],
         'travel' => ["https://images.pexels.com/photos/346885/pexels-photo-346885.jpeg", "https://images.pexels.com/photos/1058959/pexels-photo-1058959.jpeg", "https://images.pexels.com/photos/2104152/pexels-photo-2104152.jpeg", "https://images.pexels.com/photos/21014/pexels-photo.jpg"],
         'tech' => ["https://images.pexels.com/photos/39284/macbook-apple-imac-computer-39284.jpeg", "https://images.pexels.com/photos/7974/pexels-photo.jpg", "https://images.pexels.com/photos/943096/pexels-photo-943096.jpeg", "https://images.pexels.com/photos/32698507/pexels-photo-32698507.jpeg"]
@@ -223,7 +305,11 @@ function auto_post_demo_handle_generation($count = 1)
         $title = $titles[array_rand($titles)];
         shuffle($paragraphs);
         $content = "<h2>$title</h2>";
-        for ($i = 0; $i < 3; $i++) {
+
+        $paragraph_count = intval(get_option('auto_blog_paragraphs', 3));
+        $paragraph_count = min($paragraph_count, count($paragraphs));
+
+        for ($i = 0; $i < $paragraph_count; $i++) {
             $content .= "<p>{$paragraphs[$i]}</p>";
         }
 
@@ -247,21 +333,27 @@ function auto_post_demo_handle_generation($count = 1)
 
         update_post_meta($post_id, 'summary', 'This is a blog summary for the auto-generated post.');
 
+        $attach_images_setting = get_option('auto_blog_images', 1);
+
         // Attach main image + 3 extra images
         $images_for_topic = $topic_images[$topic];
-        shuffle($images_for_topic);
-        $selected_images = array_slice($images_for_topic, 0, 4);
 
-        $content .= '<div class="auto-post-images" style="display:flex;gap:10px;flex-wrap:wrap;">';
-        foreach ($selected_images as $index => $img_url) {
-            $image_id = auto_post_demo_generate_image_and_attach($post_id, $img_url);
-            if ($image_id) {
-                if ($index === 0)
-                    set_post_thumbnail($post_id, $image_id);
-                $content .= wp_get_attachment_image($image_id, 'medium');
+        if ($attach_images_setting) { // Only attach images if enabled in Settings
+            shuffle($images_for_topic);
+            $selected_images = array_slice($images_for_topic, 0, 4);
+
+
+            $content .= '<div class="auto-post-images" style="display:flex;gap:10px;flex-wrap:wrap;">';
+            foreach ($selected_images as $index => $img_url) {
+                $image_id = auto_post_demo_generate_image_and_attach($post_id, $img_url);
+                if ($image_id) {
+                    if ($index === 0)
+                        set_post_thumbnail($post_id, $image_id);
+                    $content .= wp_get_attachment_image($image_id, 'medium');
+                }
             }
+            $content .= '</div>';
         }
-        $content .= '</div>';
 
         wp_update_post(['ID' => $post_id, 'post_content' => wpautop($content)]);
 
