@@ -12,6 +12,8 @@
 - Attaches **main images and extra images** for visual appeal.
 - Sets posts to **Blog category**, assigns **tags**, and adds a **summary** automatically.
 - Draft posts are ready to **preview** before publishing.
+- Configure how many **paragraphs per post** via the **Settings page**.
+- Optionally enable or disable **image attachments** via the **Settings page**.
 - Lightweight, secure, and easy to use with **nonce verification**.
 
 ---
@@ -27,16 +29,18 @@
 ## Usage
 
 1. Go to **Auto Blog Demo** in the WordPress admin menu.
-2. Select a **topic** from the dropdown.
-3. Click **Generate 1 Post** to create a single draft, or **Generate 3 Posts** to bulk-generate multiple drafts.
-4. After generation, a **success message** appears with a link to **preview** each post.
-5. All posts are saved as **drafts** so you can edit before publishing.
+2. (Optional) Go to **Settings** to adjust the number of paragraphs per post or toggle image attachments.
+3. Select a **topic** from the dropdown.
+4. Click **Generate 1 Post** to create a single draft, or **Generate 3 Posts** to bulk-generate multiple drafts.
+5. After generation, a **success message** appears with a link to **preview** each post.
+6. All posts are saved as **drafts** so you can edit before publishing.
 
 ---
 
 ## Notes
 
 - Paragraphs are randomly shuffled for variety, so repeated generations produce unique content.
+- Images are attached only if enabled in **Settings**.
 - Designed for **demonstration or testing purposes**; tweak the content arrays to suit your actual site needs.
 
 ---
